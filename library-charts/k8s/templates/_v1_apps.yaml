@@ -1,0 +1,20 @@
+{{- define "k8s.apps.workload" }}
+---
+apiVersion: apps/v1
+kind: {{ coalesce .Values.kind .Values.global.workload.kind }}
+{{- include "k8s.template.metadata" . }}
+spec:
+  {{- if .Values.replicas }}
+  replicas: {{ .Values.replicas }}
+  {{- end }}
+  {{- if .Values.serviceName }}
+  serviceName: {{ .Values.serviceName }}
+  {{- end }}
+  {{- if .Values.volumeClaimTemplates }}
+  volumeClaimTemplates: {{ .Values.volumeClaimTemplates | toYaml | nindent 4 }}
+  {{- end }}
+  selector:
+    matchLabels: {{ include "k8s.factory.podSelectorLabel" . | indent 6 }}
+  template: {{ include "k8s.template.podTemplate" . | indent 4 }}
+...
+{{- end }}
