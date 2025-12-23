@@ -1,0 +1,11 @@
+{{- define "k8s.batch.cronjob" }}
+---
+apiVersion: batch/v1
+kind: CronJob
+{{- include "k8s.template.metadata" . }}
+spec:
+  schedule: {{ coalesce .Values.schedule .Values.global.cronjob.schedule | quote }}
+  concurrencyPolicy: {{ coalesce .Values.concurrencyPolicy .Values.global.cronjob.concurrencyPolicy }}
+  jobTemplate: {{ include "k8s.template.jobSpec" . | indent 4 }}
+...
+{{- end }}

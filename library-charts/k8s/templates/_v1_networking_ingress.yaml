@@ -1,0 +1,31 @@
+{{- define "k8s.networking.ingress" }}
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+{{- include "k8s.template.metadata" . }}
+spec:
+  {{- if .Values.ingressClassName }}
+  ingressClassName: {{ .Values.ingressClassName }}
+  {{- end }}
+  tls:
+    - hosts: {{ .Values.hosts | toYaml | nindent 8 }}
+      secretName: {{ coalesce .Values.tlsSecretName (printf "%s-tls" (include "k8s.factory.resourceName" .)) }}
+  rules:
+    {{- range .Values.hosts }}
+    - host: {{ . }}
+      http:
+        paths:
+          {{- range $.Values.paths }}
+          - pathType: ImplementationSpecific
+            {{- if .path  }}
+            path: {{ .path }}
+            {{- end }}
+            backend:
+              service:
+                name: {{ .service }}
+                port:
+                  number: {{ .port }}
+          {{- end }}
+    {{- end }}
+...
+{{- end }}
