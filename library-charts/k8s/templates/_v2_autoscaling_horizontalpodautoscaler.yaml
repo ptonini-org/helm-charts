@@ -1,0 +1,23 @@
+{{- define "k8s.autoscaling.horizontalPodAutoscaler" }}
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+{{- include "k8s.template.metadata" . }}
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: {{  coalesce .Values.targetKind .Values.global.workload.kind }}
+    name: {{ coalesce .Values.targetName (include "k8s.factory.resourceName" .) }}
+  minReplicas: {{ .Values.minReplicas }}
+  maxReplicas: {{ .Values.maxReplicas }}
+  metrics:
+    {{- range .Values.metrics }}
+    - type: Resource
+      resource:
+        name: {{ .name }}
+        target:
+          type: {{ coalesce .type $.Values.global.autoscaler.metrics.targetType }}
+          averageUtilization: {{ .averageUtilization }}
+    {{- end }}
+...
+{{- end }}

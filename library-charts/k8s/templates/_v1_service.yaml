@@ -1,0 +1,27 @@
+{{- define "k8s.core.service" }}
+---
+apiVersion: v1
+kind: Service
+{{- include "k8s.template.metadata" . }}
+spec:
+  type: {{ coalesce .Values.type  .Values.global.service.type }}
+  {{- if .Values.headless }}
+  clusterIP: None
+  {{- end }}
+  {{- if .Values.externalName }}
+  externalName: {{ .Values.externalName }}
+  {{- end }}
+  ports:
+    {{- range .Values.ports }}
+    - port: {{ .port }}
+      {{- if .name }}
+      name: {{ .name }}
+      {{- end }}
+      targetPort: {{ coalesce .targetPort .port }}
+      protocol: {{ include "k8s.factory.serviceProtocol" . }}
+    {{- end }}
+  {{- if not .Values.externalName }}
+  selector: {{ include "k8s.factory.podSelectorLabel" . | indent 4 }}
+  {{- end }}
+...
+{{- end }}
