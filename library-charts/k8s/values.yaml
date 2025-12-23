@@ -1,0 +1,38 @@
+namespaced: true
+workload:
+  kind: Deployment
+job:
+  completions: 1
+  parallelism:  1
+  restartPolicy: OnFailure
+cronjob:
+  schedule: "0 0 * * *"
+  concurrencyPolicy: Forbid
+pod:
+  selectorLabelKey: app
+  serviceAccountName: default
+  serviceAccountTokenVolume:
+    name: token
+    expiration: 3600
+service:
+  type: ClusterIP
+  port:
+    protocol: TCP
+secret:
+  type: Opaque
+autoscaler:
+  metrics:
+    targetType: Utilization
+webhook:
+  kind: MutatingWebhookConfiguration
+  matchPolicy: Equivalent
+  failurePolicy: Ignore
+  namespaceSelector:
+    operator: NotIn
+    namespaces:
+      - kube-system
+      - kube-public
+      - kube-node-lease
+  path: /mutate
+  admissionReviewVersions:
+    - v1
