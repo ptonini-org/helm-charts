@@ -1,0 +1,34 @@
+{{- define "k8s.admissionRegistration.webhookConfiguration" }}
+{{- $_ := set .Values.namespaced true }}
+---
+apiVersion: admissionregistration.k8s.io/v1
+kind: {{ coalesce .Values.kind .Values.global.webhook.kind }}
+{{- include "k8s.template.metadata" . }}
+webhooks:
+  - name: {{ include "k8s.factory.resourceName" . }}.{{ include "k8s.factory.resourceNamespace" . }}.svc
+    matchPolicy: {{ coalesce .Values.matchPolicy .Values.global.webhook.matchPolicy }}
+    failurePolicy: {{ coalesce .Values.failurePolicy .Values.global.webhook.failurePolicy }}
+    objectSelector:
+      matchExpressions:
+        - key: {{ include "k8s.factory.podSelectorLabelKey" . }}
+          operator: NotIn
+          values:
+            - {{ include "k8s.factory.podSelectorLabelValue" . }}
+    namespaceSelector:
+      matchExpressions:
+        - key: kubernetes.io/metadata.name
+          operator: {{ coalesce ((.Values).namespaceSelector).operator .Values.global.webhook.namespaceSelector.operator }}
+          values: {{ coalesce ((.Values).namespaceSelector).namespaces .Values.global.webhook.namespaceSelector.namespaces | toYaml | nindent 12 }}
+    rules: {{ .Values.rules | toYaml | nindent 6 }}
+    clientConfig:
+      {{- if .Values.caBundle }}
+      caBundle: {{ .Values.caBundle }}
+      {{- end }}
+      service:
+        name: {{ include "k8s.factory.resourceName" . }}
+        namespace: {{ include "k8s.factory.resourceNamespace" . }}
+        path: {{ coalesce .Values.path .Values.global.webhook.path }}
+    admissionReviewVersions: {{ coalesce .Values.admissionReviewVersions .Values.global.webhook.admissionReviewVersions  | toYaml | nindent 6}}
+    sideEffects: None
+...
+{{- end }}

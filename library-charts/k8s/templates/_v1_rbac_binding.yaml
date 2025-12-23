@@ -1,0 +1,25 @@
+{{- define "k8s.rbac.role" }}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: {{ include "k8s.factory.roleKind" . }}
+{{- include "k8s.template.metadata" . }}
+rules: {{ .Values.rules | toYaml | nindent 2 }}
+...
+{{- end }}
+
+
+{{- define "k8s.rbac.binding" }}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: {{ printf "%sBinding" (include "k8s.factory.roleKind" .) }}
+{{- include "k8s.template.metadata" . }}
+roleRef:
+  kind: {{ coalesce .Values.roleKind (include "k8s.factory.roleKind" .) }}
+  name: {{ coalesce .Values.roleName (include "k8s.factory.resourceName" .) }}
+  apiGroup: rbac.authorization.k8s.io
+subjects:
+  - kind: ServiceAccount
+    name: {{ coalesce ((.Values).serviceAccount).name (include "k8s.factory.resourceName" .) }}
+    namespace: {{ coalesce ((.Values).serviceAccount).namespace (include "k8s.factory.resourceNamespace" .) }}
+...
+{{- end }}
