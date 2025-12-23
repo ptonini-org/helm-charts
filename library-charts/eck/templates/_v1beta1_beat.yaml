@@ -1,0 +1,38 @@
+{{- define "eck.beat" }}
+{{- include "k8s.factory.subResource" (list . "k8s.core.serviceAccount" "serviceAccount") }}
+---
+apiVersion: beat.k8s.elastic.co/v1beta1
+kind: Beat
+{{- include "k8s.template.metadata" . }}
+spec:
+  version: {{ coalesce .Values.version .Values.global.version }}
+  type: {{ .Values.type }}
+  elasticsearchRef:
+    name: {{ coalesce .Values.elasticsearchRef .Release.Name }}
+  kibanaRef:
+    name: {{ coalesce .Values.kibanaRef .Release.Name }}
+  config: {{ .Values.config | toYaml | nindent 4 }}
+  {{ coalesce .Values.kind .Values.global.beats.kind }}:
+    {{- if .Values.replicas }}
+    replicas: {{ .Values.replicas }}
+    {{- end }}
+    podTemplate:
+      spec:
+        serviceAccountName: {{ include "k8s.factory.serviceAccountName" . }}
+        securityContext: {{ coalesce .Values.securityContext .Values.global.beats.securityContext | toYaml | nindent 10 }}
+        {{- if .Values.nodeSelector }}
+        nodeSelector: {{ .Values.nodeSelector | toYaml | nindent 10 }}
+        {{- end }}
+        {{- if .Values.tolerations }}
+        tolerations: {{ .Values.tolerations | toYaml | nindent 10 }}
+        {{- end }}
+        containers:
+          - name: {{ .Values.type }}
+            {{- if .resources  }}
+            resources: {{ .Values.resources | toYaml | nindent 14 }}
+            {{- end }}
+            {{- if .Values.env }}
+            env: {{ include "k8s.factory.mapAsEnvList" .Values.env | indent 12 }}
+            {{- end }}
+...
+{{- end }}
