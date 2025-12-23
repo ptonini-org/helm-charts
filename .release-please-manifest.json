@@ -1,3 +1,4 @@
 {
-  "library-charts/k8s": "1.0.0"
+  "library-charts/k8s": "1.0.0",
+  "library-charts/kong": "1.0.0"
 }
