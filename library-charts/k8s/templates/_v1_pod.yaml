@@ -1,0 +1,8 @@
+{{- define "k8s.core.pod" }}
+---
+apiVersion: v1
+kind: Pod
+{{ include "k8s.template.metadata" . }}
+{{ include "k8s.template.podSpec" . }}
+...
+{{- end }}
