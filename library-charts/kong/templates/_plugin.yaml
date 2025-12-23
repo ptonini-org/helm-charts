@@ -1,0 +1,26 @@
+{{- define "kong.plugin" }}
+---
+apiVersion: configuration.konghq.com/v1
+kind: {{ include "kong.factory.pluginKind" . }}
+{{- include "k8s.template.metadata" . }}
+plugin: {{ .Values.plugin }}
+{{- if .Values.config }}
+config:
+{{- range $k, $v := .Values.config }}
+  {{- if kindIs "string" $v }}
+  {{ $k }}: {{ $v | quote }}
+  {{- else if kindIs "float64" $v }}
+  {{ $k }}: {{ $v | quote }}
+  {{- else if kindIs "bool" $v }}
+  {{ $k }}: {{ $v }}
+  {{- else if kindIs "slice" $v }}
+  {{ $k }}: {{ $v | toJson }}
+  {{- else if kindIs "map" $v }}
+  {{ $k }}: {{ $v | toJson }}
+  {{- else }}
+  {{ $k }}: {{ $v }}
+  {{- end }}
+{{- end }}
+{{- end }}
+...
+{{- end }}
