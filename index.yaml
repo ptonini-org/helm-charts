@@ -10,4 +10,18 @@ entries:
     urls:
     - https://github.com/ptonini-org/helm-charts/releases/download/k8s-v1.0.0/k8s-1.0.0.tgz
     version: 1.0.0
-generated: "2025-12-23T21:27:56.209929182Z"
+  kong:
+  - apiVersion: v2
+    created: "2025-12-23T22:42:49.157882541Z"
+    dependencies:
+    - name: k8s
+      repository: https://ptonini-org.github.io/helm-charts
+      version: 1.0.0
+    description: Kong Custom Resources Template Library
+    digest: 8e542422b15a3f2c23d0777917a2da7bb38b20d08372da007b414094066a42ba
+    name: kong
+    type: library
+    urls:
+    - https://github.com/ptonini-org/helm-charts/releases/download/kong-v1.0.0/kong-1.0.0.tgz
+    version: 1.0.0
+generated: "2025-12-23T22:42:49.157888802Z"
