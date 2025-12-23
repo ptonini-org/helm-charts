@@ -1,0 +1,40 @@
+{{- define "rabbitmq.cluster" }}
+apiVersion: rabbitmq.com/v1beta1
+kind: RabbitmqCluster
+{{- include "k8s.template.metadata" . }}
+spec:
+  replicas: {{ coalesce .Values.replicas .Values.global.replicas }}
+  service: {{ coalesce .Values.service .Values.global.service | toYaml | nindent 4 }}
+  persistence: {{ coalesce .Values.persistence .Values.global.persistence | toYaml | nindent 4 }}
+  resources: {{ coalesce .Values.resources .Values.global.resources | toYaml | nindent 4 }}
+  rabbitmq:
+    {{- if .Values.additionalPlugins }}
+    additionalPlugins: {{ .Values.additionalPlugins | toYaml | nindent 6 }}
+    {{- end }}
+    {{- if .Values.additionalConfig}}
+    additionalConfig: {{- .Values.additionalConfig | toYaml | indent 4 }}
+    {{- end }}
+    {{- if .Values.envConfig }}
+    envConfig: {{ .Values.envConfig | toYaml | indent 4 }}
+    {{- end }}
+  {{- if .Values.tls }}
+  tls: {{ .Values.tls | toYaml | nindent 4 }}
+  {{- end }}
+  {{- if .Values.secretBackend }}
+  secretBackend: {{- .Values.secretBackend | toYaml | nindent 4 }}
+  {{- end }}
+  {{- if  .Values.nodeSelector }}
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+          - matchExpressions: {{.Values.nodeSelector | toYaml | nindent 14 }}
+  {{- end }}
+  {{- if .Values.tolerations }}
+  tolerations: {{ .Values.tolerations | toYaml | nindent 4 }}
+  {{- end }}
+  {{- if .Values.override }}
+  override: {{ .Values.override | toYaml | nindent 4 }}
+  {{- end }}
+...
+{{- end }}
