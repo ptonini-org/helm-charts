@@ -1,0 +1,38 @@
+{{- define "certManager.certificate" }}
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+{{- include "k8s.template.metadata" . }}
+spec:
+  secretName: {{ coalesce .Values.secretName .Release.Name }}
+  {{- if .Values.secretTemplate }}
+  secretTemplate: {{ .Values.secretTemplate | toYaml | nindent 4 }}
+  {{- end }}
+  {{- if .Values.usages }}
+  usages: {{ .Values.usages | toYaml | nindent 4 }}
+  {{- end }}
+  {{- if .Values.dnsNames }}
+  dnsNames: {{ .Values.dnsNames | toYaml | nindent 4 }}
+  {{- end }}
+  {{- if .Values.uris }}
+  uris: {{ .Values.uris | toYaml | nindent 4 }}
+  {{- end }}
+  {{- if .Values.ipAddresses }}
+  ipAddresses: {{ .Values.ipAddresses | toYaml | nindent 4 }}
+  {{- end }}
+  {{- if .Values.subject }}
+  subject: {{ .Values.subject | toYaml | nindent 4 }}
+  {{- end }}
+  isCA: {{ default false .Values.isCA }}
+  {{- if .Values.duration }}
+  duration: {{ .values.duration }}
+  {{- end }}
+  {{- if .Values.renewBefore }}
+  renewBefore: {{ .Values.renewBefore }}
+  {{- end }}
+  issuerRef:
+    name: {{ coalesce .Values.issuer .Values.global.certificate.issuer }}
+    kind: {{ coalesce .Values.issuerKind .Values.global.certificate.issuerKind }}
+    group: cert-manager.io
+...
+{{- end }}

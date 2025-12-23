@@ -1,0 +1,11 @@
+{{- define "eck.apm" }}
+{{- include "eck.mutator.enrichIngress" (list . "apm" 8200) }}
+{{- include "k8s.factory.subResource" (list . "k8s.networking.ingress" "ingress") }}
+{{- include "k8s.factory.subResource" (list . "k8s.core.serviceAccount" "serviceAccount") }}
+---
+apiVersion: apm.k8s.elastic.co/v1
+kind: ApmServer
+{{- include "k8s.template.metadata" . }}
+spec: {{ include "eck.template.componentSpec" (list . "apm") | indent 2 }}
+...
+{{- end }}

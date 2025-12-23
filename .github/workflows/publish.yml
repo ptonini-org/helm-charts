@@ -37,11 +37,7 @@ jobs:
   publish_package:
     uses: ptonini-actions/workflows/.github/workflows/handler--helm-chart.yaml@main
     needs:
-      - release_please
       - build_package
-    strategy:
-      matrix:
-        context: ${{ fromJSON(needs.release_please.outputs.paths_released) }}
     with:
       action: publish
       context: ${{ matrix.context }}
