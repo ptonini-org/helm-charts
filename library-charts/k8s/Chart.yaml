@@ -2,4 +2,4 @@ apiVersion: v2
 name: k8s
 description: Kubernetes Resources Template Library
 type: library
-version: 0.0.0
+version: 1.0.0
