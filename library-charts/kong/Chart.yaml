@@ -1,0 +1,9 @@
+apiVersion: v2
+name: kong
+description: Kong Custom Resources Template Library
+type: library
+version: 0.0.0
+dependencies:
+  - name: k8s
+    version: 1.0.0
+    repository: https://ptonini-org.github.io/helm-charts

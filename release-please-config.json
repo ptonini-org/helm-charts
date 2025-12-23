@@ -17,6 +17,10 @@
     "library-charts/k8s": {
       "release-type": "helm",
       "separate-pull-requests": true
+    },
+    "library-charts/kong": {
+      "release-type": "helm",
+      "separate-pull-requests": true
     }
   }
 }
