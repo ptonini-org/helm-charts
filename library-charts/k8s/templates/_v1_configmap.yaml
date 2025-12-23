@@ -1,0 +1,8 @@
+{{- define "k8s.core.configmap" }}
+---
+apiVersion: v1
+kind: ConfigMap
+{{- include "k8s.template.metadata" . }}
+data: {{ include "k8s.factory.mapAsMapString" .Values.data | indent 2 }}
+...
+{{- end }}
