@@ -1,0 +1,13 @@
+apiVersion: v1
+entries:
+  k8s:
+  - apiVersion: v2
+    created: "2025-12-23T21:27:56.209922489Z"
+    description: Kubernetes Resources Template Library
+    digest: ed2e9f33ea160bed91386d934b5f87e92234fe201a0018f4f360e4d1addfa158
+    name: k8s
+    type: library
+    urls:
+    - https://github.com/ptonini-org/helm-charts/releases/download/k8s-v1.0.0/k8s-1.0.0.tgz
+    version: 1.0.0
+generated: "2025-12-23T21:27:56.209929182Z"
