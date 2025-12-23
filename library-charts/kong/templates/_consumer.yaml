@@ -1,0 +1,17 @@
+{{- define "kong.consumer" }}
+---
+apiVersion: configuration.konghq.com/v1
+kind: KongConsumer
+{{- include "k8s.template.metadata" . }}
+username: {{ $.Values.username }}
+credentials:
+  - {{ include "k8s.factory.resourceName" . }}
+...
+{{/* Inject credentials secret is password is provider */}}
+{{- if .Values.password }}
+{{- $root := deepCopy . }}
+{{- $_ := unset .Values.annotations "kubernetes.io/ingress.class" }}
+{{- $_ = set .Values "plain_text" (dict "kongCredType" .Values.cred_type "username" .Values.username  "password" .Values.password ) }}
+{{- include "k8s.core.secret" . }}
+{{- end }}
+{{- end }}
