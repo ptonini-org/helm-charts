@@ -2,7 +2,7 @@ apiVersion: v2
 name: rabbitmq
 description: RabbitMQ Custom Resources Template Library
 type: library
-version: 0.0.0
+version: 1.0.0
 dependencies:
   - name: k8s
     version: 1.0.0
