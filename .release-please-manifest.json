@@ -1,4 +1,7 @@
 {
   "library-charts/k8s": "1.0.0",
-  "library-charts/kong": "1.0.0"
+  "library-charts/kong": "1.0.0",
+  "library-charts/cert-manager": "1.0.0",
+  "library-charts/rabbitmq": "1.0.0",
+  "library-charts/eck": "1.0.0"
 }
