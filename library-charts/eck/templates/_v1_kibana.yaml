@@ -1,0 +1,11 @@
+{{- define "eck.kibana" }}
+{{- include "eck.mutator.enrichIngress" (list . "kb" 5601)}}
+{{- include "k8s.factory.subResource" (list . "k8s.networking.ingress" "ingress") }}
+{{- include "k8s.factory.subResource" (list . "k8s.core.serviceAccount" "serviceAccount") }}
+---
+apiVersion: kibana.k8s.elastic.co/v1
+kind: Kibana
+{{- include "k8s.template.metadata" . }}
+spec: {{ include "eck.template.componentSpec" (list . "kibana") | indent 2 }}
+...
+{{- end }}

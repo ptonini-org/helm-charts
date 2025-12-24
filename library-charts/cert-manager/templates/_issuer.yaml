@@ -1,0 +1,10 @@
+{{- define "certManager.issuer" }}
+---
+apiVersion: cert-manager.io/v1
+kind: {{ ternary "ClusterIssuer" "Issuer" (eq .Values.scope .Values.global.scopes.cluster) }}
+{{- include "k8s.template.metadata" . }}
+spec: {{- .Values.spec | toYaml | nindent 2 }}
+...
+{{- end }}
+
+
