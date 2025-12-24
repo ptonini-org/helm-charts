@@ -17,7 +17,16 @@
     "library-charts/k8s": {
       "release-type": "helm"
     },
+    "library-charts/cert-manager": {
+      "release-type": "helm"
+    },
     "library-charts/kong": {
+      "release-type": "helm"
+    },
+    "library-charts/rabbitmq": {
+      "release-type": "helm"
+    },
+    "library-charts/eck": {
       "release-type": "helm"
     }
   }
