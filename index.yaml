@@ -1,5 +1,33 @@
 apiVersion: v1
 entries:
+  cert-manager:
+  - apiVersion: v2
+    created: "2025-12-24T00:27:11.232243639Z"
+    dependencies:
+    - name: k8s
+      repository: https://ptonini-org.github.io/helm-charts
+      version: 1.0.0
+    description: Cert-Manager Custom Resources Templates Library
+    digest: e149791e5122f39d4fb4a732d92421480f30eab2a35bd1ec6987644da24cf1fe
+    name: cert-manager
+    type: library
+    urls:
+    - https://github.com/ptonini-org/helm-charts/releases/download/cert-manager-v1.0.0/cert-manager-1.0.0.tgz
+    version: 1.0.0
+  eck:
+  - apiVersion: v2
+    created: "2025-12-24T00:27:11.510210702Z"
+    dependencies:
+    - name: k8s
+      repository: https://ptonini-org.github.io/helm-charts
+      version: 1.0.0
+    description: Elastic Cloud on Kubernetes Custom Resources Template Library
+    digest: 837f30abf750cf64d71ffef90a67ed9a8e72ce3681877ecb0f00dd7816da0e99
+    name: eck
+    type: library
+    urls:
+    - https://github.com/ptonini-org/helm-charts/releases/download/eck-v1.0.0/eck-1.0.0.tgz
+    version: 1.0.0
   k8s:
   - apiVersion: v2
     created: "2025-12-23T21:27:56.209922489Z"
@@ -24,4 +52,18 @@ entries:
     urls:
     - https://github.com/ptonini-org/helm-charts/releases/download/kong-v1.0.0/kong-1.0.0.tgz
     version: 1.0.0
-generated: "2025-12-23T22:42:49.157888802Z"
+  rabbitmq:
+  - apiVersion: v2
+    created: "2025-12-24T00:27:11.798678158Z"
+    dependencies:
+    - name: k8s
+      repository: https://ptonini-org.github.io/helm-charts
+      version: 1.0.0
+    description: RabbitMQ Custom Resources Template Library
+    digest: 76c3f259f1697874656f12fbcc13533418bf1988a61cd45f879f05e785c54b9d
+    name: rabbitmq
+    type: library
+    urls:
+    - https://github.com/ptonini-org/helm-charts/releases/download/rabbitmq-v1.0.0/rabbitmq-1.0.0.tgz
+    version: 1.0.0
+generated: "2025-12-24T00:27:11.798683778Z"
