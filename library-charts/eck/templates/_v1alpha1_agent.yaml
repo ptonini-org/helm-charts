@@ -1,0 +1,58 @@
+{{- define "eck.agent" }}
+{{- $_ := set .Values "serviceAccount" (mergeOverwrite (ternary .Values.global.fleetServer.serviceAccount .Values.global.agent.serviceAccount .Values.fleetServerEnabled) (coalesce .Values.serviceAccount dict)) }}
+{{- $_ = set .Values "resourceName" (ternary (coalesce .Values.resourceName .Values.global.fleetServer.resourceName) (coalesce .Values.resourceName .Values.global.agent.resourceName) .Values.fleetServerEnabled) }}
+{{- include "eck.mutator.enrichIngress" (list . "agent" 8220) }}
+{{- include "k8s.factory.subResource" (list . "k8s.networking.ingress" "ingress") }}
+{{- include "k8s.factory.subResource" (list . "k8s.core.serviceAccount" "serviceAccount") }}
+---
+apiVersion: agent.k8s.elastic.co/v1alpha1
+kind: Agent
+{{- include "k8s.template.metadata" . }}
+spec:
+  version: {{ coalesce .Values.version .Values.global.version }}
+  fleetServerEnabled: {{ .Values.fleetServerEnabled }}
+  {{- if .Values.fleetServerEnabled }}
+  elasticsearchRefs:
+    - name: {{ coalesce .Values.elasticsearchRef .Release.Name }}
+  {{- include "eck.template.http" (mergeOverwrite (coalesce .Values.global.http dict) (coalesce .Values.http dict)) | indent 2}}
+  {{- else }}
+  fleetServerRef:
+    name: {{ coalesce .Values.fleetServerRef .Values.global.agent.fleetServerRef }}
+  {{- end }}
+  kibanaRef:
+    name: {{ coalesce .Values.kibanaRef .Release.Name }}
+  {{- if .Values.config }}
+  config: {{ .Values.config | toYaml | nindent 4 }}
+  {{- end }}
+  mode: {{ coalesce .Values.mode .Values.global.agent.mode }}
+  policyID: {{ .Values.policyID }}
+  {{ ternary "deployment" "daemonSet" .Values.fleetServerEnabled }}:
+    {{- if .Values.replicas }}
+    replicas: {{ .Values.replicas }}
+    {{- end }}
+    podTemplate:
+      spec:
+        serviceAccountName: {{ include "k8s.factory.serviceAccountName" . }}
+        automountServiceAccountToken: {{ coalesce .Values.automountServiceAccountToken .Values.global.agent.automountServiceAccountToken }}
+        securityContext: {{ coalesce .Values.securityContext .Values.global.agent.securityContext | toYaml | nindent 10 }}
+        {{- if .Values.tolerations }}
+        tolerations: {{ .Values.tolerations | toYaml | nindent 10 }}
+        {{- end }}
+        {{- if not .Values.fleetServerEnabled }}
+        hostNetwork: {{ coalesce .Values.hostNetwork .Values.global.agent.hostNetwork }}
+        dnsPolicy: {{ coalesce .Values.dnsPolicy .Values.global.agent.dnsPolicy }}
+        volumes: {{ coalesce .Values.volumes .Values.global.agent.volumes | toYaml | nindent 10 }}
+        {{- end }}
+        containers:
+          - name: agent
+            {{- if .Values.resources }}
+            resources: {{ .Values.resources | toYaml | nindent 14 }}
+            {{- end }}
+            {{- if .Values.env }}
+            env: {{ include "k8s.factory.mapAsEnvList" .Values.env | indent 14 }}
+            {{- end }}
+            {{- if not .Values.fleetServerEnabled }}
+            volumeMounts: {{ coalesce .Values.volumeMounts .Values.global.agent.volumeMounts | toYaml | nindent 14 }}
+            {{- end }}
+...
+{{- end }}
