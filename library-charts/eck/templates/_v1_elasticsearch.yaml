@@ -1,0 +1,70 @@
+{{- define "eck.elasticsearch" }}
+{{- include "eck.mutator.enrichIngress" (list . "es" 9200)}}
+{{- include "k8s.factory.subResource" (list . "k8s.networking.ingress" "ingress") }}
+{{- include "k8s.factory.subResource" (list . "k8s.core.serviceAccount" "serviceAccount") }}
+---
+apiVersion: elasticsearch.k8s.elastic.co/v1
+kind: Elasticsearch
+{{- include "k8s.template.metadata" . }}
+spec:
+  version: {{ coalesce .Values.version .Values.global.version }}
+  {{- include "eck.template.http" (mergeOverwrite (coalesce .Values.global.http dict) (coalesce .Values.http dict)) | indent 2 }}
+  {{- if .Values.secureSettingsSecrets }}
+  secureSettings:
+    {{- range .Values.secureSettingsSecrets }}
+    - secretName: {{ . }}
+    {{- end }}
+  {{- end }}
+  nodeSets:
+    {{- range .Values.nodeSets }}
+    - name: {{ .name }}
+      count: {{ coalesce .count $.Values.global.count }}
+      {{- if .config}}
+      config: {{ .config | toYaml | nindent 8 }}
+      {{- end }}
+      podTemplate:
+        spec:
+          serviceAccountName: {{ include "k8s.factory.serviceAccountName" $ }}
+          {{- if .nodeSelector }}
+          nodeSelector: {{ .nodeSelector | toYaml | nindent 12 }}
+          {{- end }}
+          {{- if .tolerations }}
+          tolerations: {{ .tolerations | toYaml | nindent 12 }}
+          {{- end }}
+          {{- if .plugins }}
+          initContainers:
+            - name: elasticsearch-plugins
+              command: ["sh", "-c"]
+              args: ["{{ range .plugins }}bin/elasticsearch-plugin install --batch {{ . }} && {{ end }}echo"]
+          {{- end }}
+          containers:
+            - name: elasticsearch
+              {{- if .resources }}
+              resources: {{ .resources | toYaml | nindent 16 }}
+              {{- end }}
+              {{- if .env }}
+              env: {{ include "k8s.factory.mapAsEnvList" .env | indent 16 }}
+              {{- end }}
+              {{- if .volumeMounts }}
+              volumeMounts: {{ .volumeMounts | toYaml | nindent 16 }}
+              {{- end }}
+          {{- if .volumes }}
+          volumes: {{ .volumes | toYaml | nindent 12 }}
+          {{- end }}
+      {{- if .volumeClaimTemplate }}
+      volumeClaimTemplates:
+        - metadata:
+            name: {{ coalesce .volumeClaimTemplate.name $.Values.global.elasticsearch.volumeClaimTemplate.name }}
+          spec:
+            {{- if .volumeClaimTemplate.storageClassName }}
+            storageClassName: {{ .volumeClaimTemplate.storageClassName }}
+            {{- end }}
+            accessModes:
+              - ReadWriteOnce
+            resources:
+              requests:
+                storage: {{ .volumeClaimTemplate.storageSize }}
+      {{- end }}
+    {{- end }}
+...
+{{- end }}
